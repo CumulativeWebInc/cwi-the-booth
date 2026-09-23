@@ -1,0 +1,112 @@
+{
+  "schema_version": "cwi.advance-backtest/1.0",
+  "method_id": "royalty-advance-empirical-80/v1",
+  "seed": 20260923,
+  "advance_ratio": 0.6,
+  "nominal_coverage": 0.8,
+  "data_label": "SYNTHETIC SAMPLE \u2014 seeded reproducible series, NOT actual royalty data. No distributor royalty history has been ingested.",
+  "synthetic_monthly_royalties_usd": [
+    86.85,
+    149.75,
+    162.33,
+    158.49,
+    187.08,
+    202.76,
+    186.95,
+    186.97,
+    233.67,
+    205.23,
+    296.82,
+    299.72
+  ],
+  "calibration_windows": [
+    {
+      "train_months": 3,
+      "point": 1940.85,
+      "actual": 1174.61,
+      "rel_err": 0.6523,
+      "interval_low": 1501.05,
+      "interval_high": 2380.65
+    },
+    {
+      "train_months": 4,
+      "point": 1324.1,
+      "actual": 1079.52,
+      "rel_err": 0.2266,
+      "interval_low": 1024.06,
+      "interval_high": 1624.14
+    },
+    {
+      "train_months": 5,
+      "point": 1152.56,
+      "actual": 967.27,
+      "rel_err": 0.1916,
+      "interval_low": 891.39,
+      "interval_high": 1413.73
+    },
+    {
+      "train_months": 6,
+      "point": 992.77,
+      "actual": 845.62,
+      "rel_err": 0.174,
+      "interval_low": 767.81,
+      "interval_high": 1217.73
+    },
+    {
+      "train_months": 7,
+      "point": 763.21,
+      "actual": 733.45,
+      "rel_err": 0.0406,
+      "interval_low": 590.27,
+      "interval_high": 936.15
+    },
+    {
+      "train_months": 8,
+      "point": 574.08,
+      "actual": 621.26,
+      "rel_err": -0.076,
+      "interval_low": 443.99,
+      "interval_high": 704.17
+    }
+  ],
+  "q80_calibration": 0.2266,
+  "heldout_windows": [
+    {
+      "train_months": 9,
+      "point": 453.61,
+      "actual": 481.06,
+      "rel_err": -0.0571,
+      "interval_low": 350.82,
+      "interval_high": 556.4,
+      "hit": true
+    },
+    {
+      "train_months": 10,
+      "point": 293.12,
+      "actual": 357.92,
+      "rel_err": -0.1811,
+      "interval_low": 226.7,
+      "interval_high": 359.54,
+      "hit": true
+    },
+    {
+      "train_months": 11,
+      "point": 162.68,
+      "actual": 179.83,
+      "rel_err": -0.0954,
+      "interval_low": 125.82,
+      "interval_high": 199.54,
+      "hit": true
+    }
+  ],
+  "heldout_hits": 3,
+  "heldout_total": 3,
+  "q80_full_sample": 0.2056,
+  "live_estimate": {
+    "point": 2720.62,
+    "interval_low": 2161.26,
+    "interval_high": 3279.98,
+    "q": 0.2056,
+    "predicted_next_12mo_royalties": 4534.37
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "claim": "CWI Booth royalty-advance estimator back-test: 3 of 3 held-out walk-forward windows landed inside the published \u00b122.7% 80%-coverage interval",
+  "claim_type": "proportion",
+  "confidence_tier": "weak",
+  "input_sha256": "70da0c56179816e03c404ef82bd2cc6b0d37461629b22f9d20850453580cf937",
+  "interval": {
+    "high": 1.0,
+    "low": 0.5258044258424872,
+    "method_id": "eb-wilson/1.0",
+    "nominal_coverage": 0.9
+  },
+  "label": "SAMPLE",
+  "output_sha256": "21957b2ec99f3fb00c707832baa3e2a77cde259400abd0f1b4efbc1fb4554eaf",
+  "point_estimate": 1.0,
+  "provenance": {
+    "checks": [
+      {
+        "detail": "claim_type 'proportion' routed to an interval method",
+        "name": "claim_type_known",
+        "ok": true
+      },
+      {
+        "detail": "evidence tier 'single-source'",
+        "name": "evidence_tier_known",
+        "ok": true
+      },
+      {
+        "detail": "1 source(s) listed",
+        "name": "sources_present",
+        "ok": true
+      },
+      {
+        "detail": "tier 'single-source' needs >=1 source(s), has 1",
+        "name": "tier_source_minimum",
+        "ok": true
+      },
+      {
+        "detail": "all sources have a url or ref",
+        "name": "sources_identifiable",
+        "ok": true
+      },
+      {
+        "detail": "observed_at 2026-09-23T00:00:00Z",
+        "name": "observed_at_sane",
+        "ok": true
+      }
+    ],
+    "source_count": 1,
+    "status": "pass"
+  },
+  "reproducibility": "Re-run: python3 errorbar.py stamp --in <claim.json> --seed 20260923 --at 2026-09-23T14:22:16.041244+00:00  ->  byte-identical output expected. Method eb-wilson/1.0: Wilson score interval, z=1.6449 (90%), n=3. Deterministic; seed carried but unused. Fields stamped_at and output_sha256 are run metadata and are excluded from the recompute comparison performed by `errorbar.py verify`. An output that cannot be re-run is void.",
+  "seed": 20260923,
+  "stamped_at": "2026-09-23T14:22:16.041244+00:00",
+  "tool": "error-bar",
+  "tool_version": "1.0.0",
+  "unit": "held-out hit rate"
+}

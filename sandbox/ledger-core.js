@@ -57,6 +57,22 @@
 
   function err(msg) { var e = new Error(msg); e.booth = true; return e; }
 
+  // ---- referral attribution (A5) -------------------------------------------
+  // Referral links are vip/?ref=<handle> (static Pages: query-param form of the
+  // DistroKid vip/<handle> pattern). A signup/equip arriving via the link
+  // records the referrer on the credit_purchase entry — the gear ledger's
+  // equipped_by tracking surface, extended, not reinvented. The signup
+  // discount/credit bonus amount is TBD-staged (queued behind pricing
+  // approvals): the mechanism + attribution ship, not the bonus number.
+  function sanitizeReferrer(h) {
+    if (h === undefined || h === null) return null;
+    var s = String(h).trim().toLowerCase();
+    if (!s) return null;
+    if (!/^[a-z0-9_][a-z0-9_-]{0,47}$/.test(s))
+      throw err("referrer handle must be 1-48 chars: lowercase letters, digits, _ or -");
+    return s;
+  }
+
   // ---- verdict validation (First Spin) ------------------------------------
   function validateVerdict(v, rubric) {
     if (!v || typeof v !== "object") throw err("verdict must be an object");
@@ -270,7 +286,7 @@
       ts: spec.at ? Date.parse(spec.at) : Date.now(),
       prev_hash: st.prevHash
     };
-    ["type", "artist", "reviewer", "review_id", "track", "spotify_url", "amount_cents", "verdict", "memo", "verdict_summary"]
+    ["type", "artist", "reviewer", "review_id", "track", "spotify_url", "amount_cents", "verdict", "memo", "verdict_summary", "referrer"]
       .forEach(function (k) { if (spec[k] !== undefined) e[k] = spec[k]; });
     if (isNaN(e.ts)) throw err("bad timestamp: " + spec.at);
     e.postings = spec.postings;
@@ -283,10 +299,12 @@
   };
 
   // ---- public operations -----------------------------------------------------
-  Ledger.prototype.purchase = function (artist, credits, at, memo) {
+  Ledger.prototype.purchase = function (artist, credits, at, memo, opts) {
+    var referrer = sanitizeReferrer(opts && opts.referrer);
     return this._append({
       type: "credit_purchase", artist: artist, amount_cents: credits * CREDIT_CENTS,
       at: at, memo: memo || (credits + " credit(s) purchased @ $1"),
+      referrer: referrer, // null when no referral link — attribution lives on the entry
       postings: [
         { account: "cwi:unearned", debit: credits * CREDIT_CENTS },
         { account: "artist:" + artist, credit: credits * CREDIT_CENTS }
@@ -352,6 +370,20 @@
     return this.replay().balances[account] || 0;
   };
 
+  // Referral attribution counts (A5 kill-rule measurement): referral-attributed
+  // equips = credit_purchase entries with a non-null referrer.
+  Ledger.prototype.referralCounts = function () {
+    var counts = {}, total = 0;
+    this.store.read().forEach(function (line) {
+      var e = JSON.parse(line);
+      if (e.type === "credit_purchase" && e.referrer) {
+        counts[e.referrer] = (counts[e.referrer] || 0) + 1;
+        total++;
+      }
+    });
+    return { by_referrer: counts, total_attributed: total };
+  };
+
   Ledger.prototype.queue = function () {
     var st = this.replay(), out = [];
     Object.keys(st.reviews).forEach(function (id) {
@@ -389,6 +421,7 @@
     Ledger: Ledger,
     fileStore: fs ? fileStore : null,
     validateVerdict: validateVerdict,
+    sanitizeReferrer: sanitizeReferrer,
     CREDIT_CENTS: CREDIT_CENTS, REVIEWER_CUT: REVIEWER_CUT, CWI_CUT: CWI_CUT,
     REFUND_WINDOW_MS: REFUND_WINDOW_MS, CONFIDENCE_LABELS: CONFIDENCE_LABELS
   };

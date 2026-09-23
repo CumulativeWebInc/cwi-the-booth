@@ -24,6 +24,24 @@
   var mem = { lines: [], read: function () { return this.lines.slice(); }, append: function (l) { this.lines.push(l); } };
   var rubric = null, testKey = null, clockOffsetMs = 0;
 
+  // ---- referral attribution (A5) -------------------------------------------
+  // A visitor arriving via vip/?ref=<handle> (or sandbox/?ref=<handle>) gets
+  // the referrer stamped on their credit_purchase ledger entries.
+  var refHandle = null;
+  (function () {
+    try {
+      var q = new URLSearchParams(window.location.search || "");
+      var raw = q.get("ref");
+      if (raw) {
+        refHandle = BoothLedger.sanitizeReferrer(raw);
+        var b = $("ref-banner");
+        b.style.display = "block";
+        b.textContent = "Referred by " + refHandle +
+          " — your test purchases will record them as referrer in the ledger receipts below.";
+      }
+    } catch (e) { /* invalid ref: ignored, attribution stays null */ }
+  })();
+
   fetch("first-spin.json").then(function (r) { return r.json(); }).then(function (cfg) {
     rubric = cfg;
     renderLog();
@@ -61,9 +79,11 @@
     var artist = $("p-artist").value.trim() || "sandbox_artist";
     var n = parseInt($("p-n").value, 10);
     try {
-      var e = L().purchase(artist, n, sandboxNow(), n + " TEST credit(s) @ $1 (simulated). " + MEMO);
+      var e = L().purchase(artist, n, sandboxNow(), n + " TEST credit(s) @ $1 (simulated). " + MEMO,
+        { referrer: refHandle });
       ok($("p-out"), "Simulated purchase: " + n + " TEST credit(s) → " + artist +
-        ". Balance: $" + bal(artist) + " TEST. Entry " + e.id);
+        ". Balance: $" + bal(artist) + " TEST. Entry " + e.id +
+        (refHandle ? " · referrer recorded: " + refHandle : ""));
       showReceipt($("p-out"), e);
       renderLog();
     } catch (err) { bad($("p-out"), "REJECTED: " + err.message); }
@@ -154,5 +174,27 @@
       if (res.ok) ok($("ledger-log"), "Chain verified: " + mem.lines.length + " sandbox entries, all hashes link.");
       else bad($("ledger-log"), "Chain BROKEN at entry " + res.broken_at);
     } catch (err) { bad($("ledger-log"), "Verify failed: " + err.message); }
+  };
+
+  // ---- referral link generator ----------------------------------------------
+  $("mk-ref").onclick = function () {
+    try {
+      var h = BoothLedger.sanitizeReferrer($("ref-handle").value);
+      if (!h) { bad($("ref-out"), "Enter a handle first (1–48 chars: lowercase letters, digits, _ or -)."); return; }
+      var link = "https://cumulativewebinc.github.io/cwi-the-booth/vip/?ref=" + encodeURIComponent(h);
+      $("ref-out").innerHTML = '<div class="okmsg">Your referral link:</div>' +
+        '<div class="keybox" id="ref-link">' + esc(link) + "</div>" +
+        '<button class="btn ghost" id="copy-ref" style="margin-top:10px;">Copy link</button>' +
+        '<p style="color:#555;font-size:.9rem">Anyone who buys credits through this link gets a ledger entry ' +
+        "with <code>referrer: " + esc(h) + "</code> — auditable in their receipts and in the chain. " +
+        "Referral reward amount: <strong>TBD</strong> (queued behind pricing approvals).</p>";
+      $("copy-ref").onclick = function () {
+        var t = document.createElement("textarea");
+        t.value = link; document.body.appendChild(t); t.select();
+        try { document.execCommand("copy"); } catch (e) { /* clipboard unavailable */ }
+        document.body.removeChild(t);
+        ok($("ref-out"), "Copied: " + link);
+      };
+    } catch (err) { bad($("ref-out"), "REJECTED: " + err.message); }
   };
 })();

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIP Referrals — THE BOOTH | Cumulative Web Inc</title>
+<meta name="description" content="THE BOOTH referral links: every agent gets a vip referral link. Signups through the link record the referrer in the ledger — auditable attribution. Referral reward TBD.">
+<style>
+  :root { --red: #c8141e; --ink: #111; --paper: #fafafa; --grey: #555; --amber: #b26a00; --green: #2e7d32; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; color: var(--ink); background: var(--paper); line-height: 1.6; }
+  header { background: #0c0c0c; color: #fff; padding: 28px 20px; text-align: center; }
+  .hero { background: linear-gradient(160deg, #101010, #1c0a0d 60%, #0c0c0c);
+          color: #fff; text-align: center; padding: 64px 20px 56px; }
+  .hero h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); margin: 0 0 12px; }
+  .hero p.lede { font-size: 1.15rem; max-width: 640px; margin: 0 auto 24px; color: #e8d5d7; }
+  .cta { display: inline-block; background: var(--red); color: #fff; font-weight: 700;
+         padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05rem; margin: 6px; }
+  .cta.ghost { background: transparent; color: #fff; border: 2px solid #fff; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 24px; margin-bottom: 18px; }
+  .card h2 { margin-top: 0; font-size: 1.3rem; }
+  label { display: block; font-size: .9rem; color: var(--grey); margin: 10px 0 2px; }
+  input[type=text] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+  button.btn { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 12px 24px;
+               font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 12px; }
+  .out { margin-top: 12px; font-size: .92rem; }
+  .okmsg { background: #e8f5e9; border-left: 5px solid var(--green); padding: 10px 14px; border-radius: 4px; }
+  .err { background: #fdecea; border-left: 5px solid var(--red); padding: 10px 14px; border-radius: 4px; }
+  .keybox { font-family: monospace; background: #111; color: #ffd54f; padding: 10px 14px; border-radius: 6px; word-break: break-all; }
+  .refbar { background: #123; color: #fff; text-align: center; padding: 12px 16px; font-weight: 800; display: none; }
+  .kill { background: #fdecea; border-left: 6px solid var(--red); padding: 14px 18px; border-radius: 6px; font-size: .92rem; }
+  .tbd { background: #fff8e1; border-left: 6px solid var(--amber); padding: 14px 18px; border-radius: 6px; }
+  code { background: #f0f0f0; padding: 1px 6px; border-radius: 4px; font-size: .9em; }
+  footer { background: #0c0c0c; color: #999; text-align: center; padding: 28px 20px; font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="refbar" id="refbar"></div>
+<header>
+  <div>CUMULATIVE WEB INC · THE BOOTH</div>
+</header>
+
+<div class="hero">
+  <h1>VIP Referrals</h1>
+  <p class="lede">Every agent gets a referral link — the DistroKid <code>vip/&lt;handle&gt;</code> pattern,
+  adapted to our static site: <code>cwi-the-booth/vip/?ref=&lt;handle&gt;</code>.
+  Anyone who buys credits through your link is stamped with you as <code>referrer</code>
+  in the ledger — independently auditable, forever.</p>
+  <a class="cta" href="../sandbox/" id="hero-try">Try the sandbox</a>
+  <a class="cta ghost" href="#get-link">Get your link</a>
+</div>
+
+<div class="wrap">
+  <div class="card" id="get-link">
+    <h2>Get your referral link</h2>
+    <p>Pick a handle. Your link: <code>https://cumulativewebinc.github.io/cwi-the-booth/vip/?ref=<strong>YOUR_HANDLE</strong></code></p>
+    <label>Your handle (lowercase letters, digits, _ or -, max 48 chars)</label>
+    <input type="text" id="vip-handle" placeholder="your_handle">
+    <button class="btn" id="mk-vip">Generate my referral link</button>
+    <div class="out" id="vip-out"></div>
+  </div>
+
+  <div class="card">
+    <h2>How attribution works</h2>
+    <ol>
+      <li><strong>Share your link.</strong> <code>/vip/?ref=&lt;handle&gt;</code> — it lands here, then sends the visitor to the sandbox with your handle attached.</li>
+      <li><strong>They buy credits.</strong> The <code>credit_purchase</code> ledger entry carries <code>"referrer": "&lt;handle&gt;"</code> — recorded by the same production ledger code (<code>ledger-core.js</code>) the sandbox runs.</li>
+      <li><strong>Audit it yourself.</strong> Download the receipts (.jsonl), run the chain verify, grep for <code>referrer</code>. The <code>referralCounts()</code> read helper tallies attributed equips per handle — that's how the kill rule below is measured.</li>
+    </ol>
+    <p style="font-size:.9rem;color:var(--grey);">Why the query-param form? GitHub Pages is static — there is no per-handle file to create.
+    <code>vip/?ref=&lt;handle&gt;</code> is the honest static-site equivalent of <code>vip/&lt;handle&gt;</code>; the sandbox honors <code>?ref=</code> directly too.</p>
+  </div>
+
+  <div class="tbd">
+    <strong>Referral reward: TBD.</strong> The signup discount / credit bonus amount is queued behind Black's pricing approvals.
+    This page ships the <strong>mechanism + attribution</strong>, not the bonus number — the number is never invented, never staged as live.
+  </div>
+
+  <div class="kill" style="margin-top:18px;">
+    <strong>Kill rule (public):</strong> fewer than <strong>10 referral-attributed equips in 30 days</strong> → the referral program is killed.
+    Attribution data stays in the ledger.
+  </div>
+
+  <div style="text-align:center; margin: 32px 0;">
+    <a class="cta" href="mailto:hp@cumulativeweb.com?subject=VIP%20referral%20%E2%80%94%20THE%20BOOTH">Become a VIP referrer</a>
+    <a class="cta ghost" style="color:var(--red); border:2px solid var(--red); background:#fff;" href="../sandbox/">Try the sandbox</a><br>
+    <span style="color:#555;font-size:.9rem;">Try a full test purchase through a referral link — then check the receipts.</span>
+  </div>
+</div>
+
+<footer>
+  THE BOOTH · Cumulative Web Inc · cumulativeweb.com<br>
+  Referral attribution: mechanism live · reward TBD (pricing approvals pending).
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function ok(el,t){ el.innerHTML = '<div class="okmsg">'+esc(t)+"</div>"; }
+  function bad(el,t){ el.innerHTML = '<div class="err">'+esc(t)+"</div>"; }
+  function clean(h){
+    var s = String(h==null?"":h).trim().toLowerCase();
+    if (!s) return null;
+    if (!/^[a-z0-9_][a-z0-9_-]{0,47}$/.test(s)) throw new Error("handle must be 1–48 chars: lowercase letters, digits, _ or -");
+    return s;
+  }
+  // If we arrived via ?ref=<handle>, show it and point the hero CTA at the sandbox with the ref attached.
+  try {
+    var q = new URLSearchParams(window.location.search || "");
+    var h = clean(q.get("ref"));
+    if (h) {
+      var bar = document.getElementById("refbar");
+      bar.style.display = "block";
+      bar.textContent = "You arrived via " + h + "'s referral link — their handle will be recorded as referrer on your purchases.";
+      document.getElementById("hero-try").href = "../sandbox/?ref=" + encodeURIComponent(h);
+    }
+  } catch (e) { /* invalid ref: ignored */ }
+
+  document.getElementById("mk-vip").onclick = function () {
+    try {
+      var h = clean(document.getElementById("vip-handle").value);
+      if (!h) { bad(document.getElementById("vip-out"), "Enter a handle first."); return; }
+      var link = "https://cumulativewebinc.github.io/cwi-the-booth/vip/?ref=" + encodeURIComponent(h);
+      document.getElementById("vip-out").innerHTML =
+        '<div class="okmsg">Your referral link:</div><div class="keybox">' + esc(link) + "</div>" +
+        '<p style="color:#555;font-size:.9rem">Share it anywhere. Every credit purchase through it records ' +
+        "<code>referrer: " + esc(h) + "</code> in the ledger. Reward amount: <strong>TBD</strong> (pricing approvals pending).</p>";
+    } catch (e) { bad(document.getElementById("vip-out"), "REJECTED: " + e.message); }
+  };
+})();
+</script>
+</body>
+</html>

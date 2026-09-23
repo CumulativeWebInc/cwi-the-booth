@@ -40,9 +40,9 @@
 <body>
 <div class="testbar">⚠️ SANDBOX — TEST MODE — SIMULATED CREDITS ONLY — NO REAL MONEY ⚠️</div>
 <header>
-  <img src="../neon-nights-777/game/art/cwi-logo-v1.jpg" alt="Cumulative Web Inc logo">
   <div>CUMULATIVE WEB INC · THE BOOTH · SANDBOX</div>
 </header>
+<div id="ref-banner" style="display:none; background:#123; color:#fff; text-align:center; padding:10px 16px; font-weight:700;"></div>
 
 <div class="wrap">
   <div class="notice">
@@ -100,6 +100,20 @@
     exactly the rule production enforces.</p>
     <button class="btn ghost" id="do-refund">Simulate request + 73h advance + refund</button>
     <div class="out" id="f-out"></div>
+  </div>
+
+  <div class="step">
+    <h2>6 · Referral links <span class="tag">LIVE MECHANISM</span></h2>
+    <p>Your referral link: <code>https://cumulativewebinc.github.io/cwi-the-booth/vip/?ref=<strong>YOUR_HANDLE</strong></code>
+    (this sandbox page honors <code>?ref=</code> directly too). Anyone who buys credits through your link gets a
+    <code>credit_purchase</code> ledger entry stamped with your handle as <code>referrer</code> —
+    independently auditable in the receipt log below.</p>
+    <p style="font-size:.9rem;color:#555;"><strong>Referral reward: TBD</strong> — queued behind Black's pricing approvals.
+    The attribution mechanism is live; the bonus number ships with approved pricing, never before.</p>
+    <label>Your handle (lowercase letters, digits, _ or -, max 48 chars)</label>
+    <input type="text" id="ref-handle" placeholder="your_handle">
+    <button class="btn" id="mk-ref">Generate my referral link</button>
+    <div class="out" id="ref-out"></div>
   </div>
 
   <div class="step">

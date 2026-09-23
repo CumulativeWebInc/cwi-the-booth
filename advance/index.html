@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royalty-Advance Estimator (ESTIMATE · SAMPLE) | THE BOOTH — Cumulative Web Inc</title>
+<meta name="description" content="Public royalty-advance estimator for THE BOOTH: paste 12 months of royalty earnings, get an advance range with published error bars. An estimate is not an offer.">
+<style>
+  :root { --red: #c8141e; --ink: #111; --paper: #fafafa; --grey: #555; --amber: #b26a00; --green: #2e7d32; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; color: var(--ink); background: var(--paper); line-height: 1.6; }
+  .estbar { background: #123; color: #fff; text-align: center; padding: 12px 16px;
+            font-weight: 800; letter-spacing: .04em; }
+  header { background: #0c0c0c; color: #fff; padding: 24px 20px; text-align: center; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+  .notice { background: #fff8e1; border: 2px solid var(--amber); border-radius: 10px; padding: 18px 22px; margin-bottom: 24px; }
+  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 22px; margin-bottom: 18px; }
+  .card h2 { margin-top: 0; font-size: 1.25rem; }
+  label { display: block; font-size: .9rem; color: var(--grey); margin: 10px 0 2px; }
+  input[type=text], input[type=number], textarea { width: 100%; padding: 10px; border: 1px solid #ccc;
+    border-radius: 6px; font-size: 1rem; font-family: inherit; }
+  textarea { font-family: monospace; }
+  button.btn { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 12px 24px;
+               font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 12px; }
+  .out { margin-top: 12px; }
+  .range { font-size: 1.8rem; font-weight: 800; color: var(--red); }
+  .stamp { background: #0c0c0c; color: #c8e6c9; padding: 14px; border-radius: 8px;
+           overflow-x: auto; font-size: .8rem; font-family: monospace; }
+  .tag { display: inline-block; font-size: .75rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;
+         vertical-align: middle; margin-left: 8px; }
+  .tag.sample { background: var(--amber); color: #fff; }
+  .tag.est { background: #123; color: #fff; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { padding: 8px; border-bottom: 1px solid #e5e5e5; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  .hit { color: var(--green); font-weight: 700; } .miss { color: var(--red); font-weight: 700; }
+  .cta { display: inline-block; background: var(--red); color: #fff; font-weight: 700;
+         padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05rem; margin: 6px; }
+  .cta.ghost { background: #fff; color: var(--red); border: 2px solid var(--red); }
+  footer { background: #0c0c0c; color: #999; text-align: center; padding: 28px 20px; font-size: .9rem; }
+  .kill { background: #fdecea; border-left: 6px solid var(--red); padding: 14px 18px; border-radius: 6px; font-size: .92rem; }
+</style>
+</head>
+<body>
+<div class="estbar">ESTIMATE · SAMPLE — NOT AN OFFER · NO ADVANCE IS PAID WITHOUT BLACK'S EXPLICIT PER-DEAL APPROVAL</div>
+<header>
+  <div style="font-size:.85rem; letter-spacing:.08em; color:#bbb;">CUMULATIVE WEB INC · THE BOOTH</div>
+  <h1 style="margin:8px 0 0;">Royalty-Advance Estimator</h1>
+  <p style="color:#bbb; max-width:640px; margin:12px auto 0;">What advance does this catalog qualify for?
+  Paste 12 months of royalty earnings (or catalog streams) — get an advance <strong>range with published error bars</strong>.
+  Amuse Fast Forward precedent: an advance against predicted future royalties.</p>
+</header>
+
+<div class="wrap">
+  <div class="notice">
+    <strong>Honest labels, up front.</strong> Everything on this page is an <strong>ESTIMATE</strong> computed from
+    <strong>SAMPLE</strong> data and disclosed assumptions. It is <strong>not an offer, not a commitment, not a payout</strong> —
+    no advance is ever paid without Black's explicit per-deal approval (QUEUED-FOR-BLACK at deal time).
+    The built-in demo series is <strong>synthetic</strong> (seeded, reproducible — never presented as real distributor data);
+    no distributor royalty history has been ingested yet.
+  </div>
+
+  <div class="card">
+    <h2>1 · Your numbers <span class="tag est">YOUR INPUT</span></h2>
+    <label><input type="radio" name="mode" value="monthly" checked> Monthly royalty earnings (12 months, USD, comma-separated)</label>
+    <textarea id="in-monthly" rows="3">86.85, 149.75, 162.33, 158.49, 187.08, 202.76, 186.95, 186.97, 233.67, 205.23, 296.82, 299.72</textarea>
+    <p style="font-size:.85rem;color:var(--grey);">Prefilled with the <strong>synthetic SAMPLE back-test series</strong>
+    (seed 20260923) so you can reproduce the published numbers. Replace with your own 12 months for a real estimate.</p>
+    <label><input type="radio" name="mode" value="streams"> Streams shortcut (last-12-month streams × per-stream $ → flat monthly shape <em>assumption</em>)</label>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div><label>Last-12-month streams</label><input type="number" id="in-streams" value="1200000" min="0"></div>
+      <div><label>Per-stream $ (assumption — edit it)</label><input type="number" id="in-rate" value="0.004" step="0.0005" min="0.0001"></div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div><label>Advance ratio (share of predicted earnings — Amuse-style, editable)</label>
+        <input type="number" id="in-ratio" value="0.6" step="0.05" min="0.05" max="1"></div>
+      <div><label>Error-bar half-width ± (published q80, fixed)</label>
+        <input type="text" id="in-q" value="20.56%" disabled></div>
+    </div>
+    <button class="btn" id="run">Run estimate</button>
+    <div class="out" id="est-out"></div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Methodology <span class="tag sample">PUBLISHED</span></h2>
+    <p><strong>Method id:</strong> <code>royalty-advance-empirical-80/v1</code> · nominal coverage 80%.</p>
+    <ol>
+      <li><strong>Trend fit.</strong> Ordinary least-squares trend on the trailing monthly earnings series
+        (minimum 3 months; 12 recommended). All inputs must be non-negative numbers.</li>
+      <li><strong>Forward prediction.</strong> Project the trend 12 months ahead (each month floored at $0), sum the predictions.</li>
+      <li><strong>Advance point.</strong> <code>advance_ratio × predicted next-12-month total</code>.
+        Default ratio 0.6 (editable above) — the Amuse Fast Forward shape: an advance against a share of predicted earnings.</li>
+      <li><strong>Error bars.</strong> The published half-width ±20.56% is the empirical 80th percentile of
+        |relative residual| from 9 walk-forward back-test windows on a 12-month series (see §3).
+        Output range = point × (1 ± 0.2056). Nominal coverage 80% — the back-test measured 8/9 windows inside.</li>
+      <li><strong>Stamping.</strong> Every estimate carries the method id, the input SHA-256, and the q used —
+        reproducible from the inputs above. The headline back-test claim is independently stamped with the
+        <a href="https://cumulativewebinc.github.io/cwi-learn/error-bar/errorbar.py">error-bar</a> tool
+        (Wilson interval, provenance <strong>pass</strong>, confidence tier <strong>weak</strong> — reported as-is):
+        <a href="./backtest-stamped.json">backtest-stamped.json</a>.</li>
+    </ol>
+    <p style="font-size:.9rem;color:var(--grey);">Streams shortcut: monthly earnings = (streams × per-stream $) ÷ 12,
+    i.e. a <strong>flat monthly shape assumption</strong> — disclosed, not data. The intelligence store's stream
+    time-series exists but distributor royalty statements are not yet wired in, so v1 ingests pasted history.</p>
+  </div>
+
+  <div class="card">
+    <h2>3 · Back-test <span class="tag sample">NUMBERS, NOT ADJECTIVES</span></h2>
+    <p>Series: <strong>synthetic 12-month royalties</strong>, seed <code>20260923</code>
+    (trend + seasonal + Gaussian noise) — <strong>SAMPLE, never actual data</strong>.
+    Walk-forward: train on months 1..m, predict the held-out remainder of the year, compare the advance point
+    against the held-out actual. Full data + code: <a href="./backtest.json">backtest.json</a>
+    (<code>cwi.advance-backtest/1.0</code>), estimator: <a href="./estimator.js">estimator.js</a>.</p>
+    <table>
+      <thead><tr><th>Train months</th><th>Point $</th><th>Actual $</th><th>Interval $</th><th>Rel. err</th><th>Inside?</th></tr></thead>
+      <tbody id="bt-body"><tr><td colspan="6" style="text-align:left">Loading backtest.json…</td></tr></tbody>
+    </table>
+    <p style="font-size:.95rem;"><strong>Calibration (6 windows, m=3–8):</strong> q80 = <strong>±22.66%</strong>, 5/6 inside.
+    <strong>Held-out (3 windows, m=9–11, never used to set the width):</strong>
+    <strong class="hit">3/3 inside</strong> the published ±22.66% interval.
+    <strong>Full-sample q80 (published width):</strong> <strong>±20.56%</strong>; overall <strong>8/9</strong> inside
+    vs 80% nominal coverage. Honest caveat: 9 windows is a small sample — coverage is re-measured as real royalty
+    history arrives; the interval widens if it misses.</p>
+    <p style="font-size:.95rem;"><strong>Live estimate on the full synthetic series</strong> (all 12 months, predict next 12):
+    predicted royalties <strong>$4,534.37</strong> → advance point <strong>$2,720.62</strong>,
+    range <strong>$2,161.26 – $3,279.98</strong>. <em>Synthetic example only — not an offer.</em></p>
+  </div>
+
+  <div class="kill">
+    <strong>Kill rule (public):</strong> fewer than <strong>100 external runs in 30 days</strong> → the tool is killed,
+    the data and methodology stay. <strong>Truth rule:</strong> an estimate is never silently upgraded to an offer —
+    payouts need Black's explicit per-deal approval, every time.
+  </div>
+
+  <div style="text-align:center; margin: 32px 0;">
+    <a class="cta" href="mailto:hp@cumulativeweb.com?subject=Royalty%20advance%20estimate%20%E2%80%94%20THE%20BOOTH">Talk to CWI about an advance</a>
+    <a class="cta ghost" href="../sandbox/">Try the Booth sandbox</a><br>
+    <span style="color:#555;font-size:.9rem;">Estimates are free. Payouts are Black's call.</span>
+  </div>
+</div>
+
+<footer>
+  THE BOOTH · Cumulative Web Inc · cumulativeweb.com<br>
+  Royalty-advance estimator · ESTIMATE/SAMPLE · methodology + back-test published above.
+</footer>
+
+<script src="./estimator.js"></script>
+<script>
+(function () {
+  "use strict";
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+  function row(w){
+    return "<tr><td>1–"+w.m+"</td><td>"+w.point.toFixed(2)+"</td><td>"+w.actual.toFixed(2)+
+      "</td><td>"+w.interval_low.toFixed(2)+" – "+w.interval_high.toFixed(2)+
+      "</td><td>"+(w.rel_err*100).toFixed(1)+"%</td><td class='"+(w.hit?"hit":"miss")+"'>"+
+      (w.hit?"✓":"✗")+"</td></tr>";
+  }
+  fetch("./backtest.json").then(function(r){return r.json();}).then(function(bt){
+    var rows = bt.calibration_windows.concat(bt.heldout_windows).map(row).join("");
+    document.getElementById("bt-body").innerHTML = rows;
+  }).catch(function(){ document.getElementById("bt-body").innerHTML =
+    "<tr><td colspan='6'>backtest.json failed to load — see the static summary above.</td></tr>"; });
+
+  function getMode(){
+    var r = document.querySelector('input[name=mode]:checked');
+    return r ? r.value : "monthly";
+  }
+  async function sha256hex(s){
+    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(function(b){return ("0"+b.toString(16)).slice(-2);}).join("");
+  }
+  function money(x){ return "$" + x.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+  document.getElementById("run").onclick = async function(){
+    var out = document.getElementById("est-out"), series, note = "";
+    try {
+      if (getMode() === "monthly") {
+        series = document.getElementById("in-monthly").value.split(",")
+          .map(function(x){return parseFloat(x.trim());})
+          .filter(function(x){return !isNaN(x);});
+        if (series.length < 3) throw new Error("enter at least 3 monthly figures");
+      } else {
+        var st = parseFloat(document.getElementById("in-streams").value);
+        var rate = parseFloat(document.getElementById("in-rate").value);
+        var conv = AdvanceEstimator.fromStreams(st, rate);
+        series = conv.series; note = "Streams shortcut used — flat monthly shape is an assumption, not data.";
+      }
+      var ratio = parseFloat(document.getElementById("in-ratio").value);
+      var res = AdvanceEstimator.estimate(series, { ratio: ratio });
+      var inputHash = await sha256hex(JSON.stringify(series) + "|ratio=" + ratio);
+      out.innerHTML =
+        '<p><span class="tag est">ESTIMATE</span> <span class="tag sample">SAMPLE</span></p>' +
+        '<div class="range">' + money(res.advance_low_usd) + " – " + money(res.advance_high_usd) + "</div>" +
+        "<p>Advance point: <strong>" + money(res.advance_point_usd) + "</strong> " +
+        "(ratio " + ratio + " × predicted next-12-month royalties " + money(res.predicted_next_12mo_royalties_usd) + ").<br>" +
+        "Error bars: ±" + (res.q80*100).toFixed(2) + "% (empirical q80, nominal 80% coverage — see back-test §3). " +
+        (note ? esc(note) + " " : "") +
+        "This is an <strong>estimate, not an offer</strong> — no advance is paid without Black's explicit per-deal approval.</p>" +
+        '<div class="stamp">method_id: ' + esc(res.method_id) +
+        "\nadvance_ratio: " + ratio + "\nq80: " + res.q80 +
+        "\ninput_sha256: " + inputHash +
+        "\nlabel: ESTIMATE/SAMPLE — not an offer</div>";
+    } catch (e) {
+      out.innerHTML = '<p style="color:#c8141e"><strong>Rejected:</strong> ' + esc(e.message) + "</p>";
+    }
+  };
+})();
+</script>
+</body>
+</html>
