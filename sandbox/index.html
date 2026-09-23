@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE BOOTH — SANDBOX (TEST MODE) | Cumulative Web Inc</title>
+<meta name="description" content="Sandbox test mode for THE BOOTH: try the full credit purchase → review → settlement flow with simulated TEST credits. No real money.">
+<style>
+  :root { --red: #c8141e; --ink: #111; --paper: #fafafa; --grey: #555; --amber: #b26a00; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; color: var(--ink); background: var(--paper); line-height: 1.6; }
+  .testbar { background: repeating-linear-gradient(45deg, #b26a00, #b26a00 18px, #8a5200 18px, #8a5200 36px);
+             color: #fff; text-align: center; padding: 12px 16px; font-weight: 800; letter-spacing: .04em; }
+  header { background: #0c0c0c; color: #fff; padding: 24px 20px; text-align: center; }
+  header img { width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+  .notice { background: #fff8e1; border: 2px solid var(--amber); border-radius: 10px; padding: 18px 22px; margin-bottom: 24px; }
+  .step { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 22px; margin-bottom: 18px; }
+  .step h2 { margin-top: 0; font-size: 1.25rem; }
+  .step h2 .tag { background: var(--amber); color: #fff; font-size: .7rem; padding: 3px 10px; border-radius: 20px; vertical-align: middle; margin-left: 8px; }
+  label { display: block; font-size: .9rem; color: var(--grey); margin: 10px 0 2px; }
+  input[type=text], input[type=number] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  button.btn { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 12px 24px;
+               font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 12px; }
+  button.btn:disabled { background: #bbb; cursor: not-allowed; }
+  button.btn.ghost { background: #fff; color: var(--red); border: 2px solid var(--red); }
+  .out { margin-top: 12px; font-size: .92rem; }
+  .okmsg { background: #e8f5e9; border-left: 5px solid #2e7d32; padding: 10px 14px; border-radius: 4px; }
+  .err { background: #fdecea; border-left: 5px solid var(--red); padding: 10px 14px; border-radius: 4px; }
+  pre.receipt { background: #0c0c0c; color: #c8e6c9; padding: 14px; border-radius: 8px; overflow-x: auto; font-size: .8rem; max-height: 320px; overflow-y: auto; }
+  #ledger-log pre.receipt { max-height: 220px; }
+  .keybox { font-family: monospace; background: #111; color: #ffd54f; padding: 10px 14px; border-radius: 6px; word-break: break-all; }
+  .cta { display: inline-block; background: var(--red); color: #fff; font-weight: 700;
+         padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05rem; margin: 6px; }
+  footer { background: #0c0c0c; color: #999; text-align: center; padding: 28px 20px; font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="testbar">⚠️ SANDBOX — TEST MODE — SIMULATED CREDITS ONLY — NO REAL MONEY ⚠️</div>
+<header>
+  <img src="../neon-nights-777/game/art/cwi-logo-v1.jpg" alt="Cumulative Web Inc logo">
+  <div>CUMULATIVE WEB INC · THE BOOTH · SANDBOX</div>
+</header>
+
+<div class="wrap">
+  <div class="notice">
+    <strong>What this is:</strong> a zero-risk rehearsal of THE BOOTH's money flow.
+    Every step runs the <em>exact same ledger code</em> as production
+    (<code>ledger-core.js</code> — same file, same rules) against a throwaway
+    in-browser ledger. Receipts are production-format, stamped <strong>SANDBOX TEST</strong>.
+    Nothing here touches real credits, real reviewers, or real money.
+    <br><br>
+    <strong>Try the API sandbox too:</strong>
+    <a href="https://cwi-x402-api-production.up.railway.app/api/v1/sandbox/status">x402 sandbox status (live)</a> ·
+    <a href="../">← Back to THE BOOTH</a>
+  </div>
+
+  <div class="step">
+    <h2>1 · Get a test key <span class="tag">TEST</span></h2>
+    <p>Test keys are synthetic, generated in your browser, and unlock the simulated steps below.</p>
+    <button class="btn" id="mk-key">Generate test key</button>
+    <div class="out" id="key-out"></div>
+  </div>
+
+  <div class="step">
+    <h2>2 · Simulated credit purchase <span class="tag">TEST</span></h2>
+    <div class="row">
+      <div><label>Test artist id</label><input type="text" id="p-artist" value="sandbox_artist"></div>
+      <div><label>TEST credits (whole $1 units)</label><input type="number" id="p-n" value="5" min="1" max="100"></div>
+    </div>
+    <button class="btn" id="do-purchase">Simulate purchase</button>
+    <div class="out" id="p-out"></div>
+  </div>
+
+  <div class="step">
+    <h2>3 · Request a review (1 TEST credit → escrow) <span class="tag">TEST</span></h2>
+    <div class="row">
+      <div><label>Review id</label><input type="text" id="r-id" value="sb_rev_001"></div>
+      <div><label>Track</label><input type="text" id="r-track" value="Sandbox Demo Track"></div>
+    </div>
+    <button class="btn" id="do-request">Simulate review request</button>
+    <div class="out" id="r-out"></div>
+  </div>
+
+  <div class="step">
+    <h2>4 · Simulated reviewer delivery + settlement <span class="tag">TEST</span></h2>
+    <p>A canned <em>valid</em> First Spin verdict is delivered (5 criteria, confidence labels, cited sources —
+    it passes the same validation production enforces). Escrow splits $0.50 / $0.50, then a
+    <strong>simulated</strong> settlement payout is recorded.</p>
+    <label>Reviewer handle</label><input type="text" id="d-who" value="sandbox_reviewer">
+    <button class="btn" id="do-deliver">Simulate claim + delivery + settlement</button>
+    <div class="out" id="d-out"></div>
+  </div>
+
+  <div class="step">
+    <h2>5 · Refund path (72h clock) <span class="tag">TEST</span></h2>
+    <p>Requests a second review, then advances the sandbox clock 73 hours to open the refund window —
+    exactly the rule production enforces.</p>
+    <button class="btn ghost" id="do-refund">Simulate request + 73h advance + refund</button>
+    <div class="out" id="f-out"></div>
+  </div>
+
+  <div class="step">
+    <h2>Receipt log <span class="tag">TEST</span></h2>
+    <p>Every entry below is a real ledger entry from the production ledger code, hash-chained,
+    with <code>memo</code> stamped <strong>SANDBOX TEST</strong>. Download the JSONL to verify the chain yourself.</p>
+    <button class="btn ghost" id="dl">Download sandbox receipts (.jsonl)</button>
+    <button class="btn ghost" id="verify">Verify chain</button>
+    <div class="out" id="ledger-log"></div>
+  </div>
+
+  <div style="text-align:center; margin: 32px 0;">
+    <a class="cta" href="mailto:hp@cumulativeweb.com?subject=Founding%20artist%20credits%20%E2%80%94%20THE%20BOOTH%20(sandbox%20trial)">Get real founding-artist credits</a><br>
+    <span style="color:#555;font-size:.9rem;">Sandbox convinced you? The real Booth sells $1 written verdicts — placements never for sale.</span>
+  </div>
+</div>
+
+<footer>
+  THE BOOTH SANDBOX · Cumulative Web Inc · cumulativeweb.com<br>
+  Test mode. Simulated credits only. No real money moves here.
+</footer>
+
+<script src="sha256.js"></script>
+<script src="ledger-core.js"></script>
+<script src="sandbox.js"></script>
+</body>
+</html>
